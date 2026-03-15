@@ -24,9 +24,9 @@ Independent Researcher, Pathanamthitta, Kerala, India}
 \maketitle
 
 \begin{abstract}
-Bayesian statistical methods offer substantial advantages in modern drug and biologic development by enabling formal incorporation of prior clinical evidence, real-world data, and historical trial results, often leading to more efficient trial designs, smaller sample sizes, and accelerated decision-making. In response to persistent challenges in patient accrual, high development costs, and long timelines—particularly in oncology, rare diseases, and pediatric indications—the U.S. Food and Drug Administration released its draft guidance ``Use of Bayesian Methodology in Clinical Trials of Drugs and Biologics'' on January 12, 2026 (Docket FDA-2025-D-3217). This document provides a comprehensive framework for using Bayesian approaches as the basis for primary inference, including recommendations on prior construction, dynamic borrowing mechanisms, subgroup analysis via hierarchical models, dose-finding designs, and rigorous evaluation of frequentist operating characteristics.
+Bayesian statistical methods offer significant advantages in contemporary drug and biologic development by enabling formal incorporation of prior clinical evidence, real-world data, and historical trial results. These approaches frequently result in more efficient trial designs, reduced sample sizes, and accelerated decision-making. In response to ongoing challenges such as limited patient accrual, high development costs, and prolonged timelines—particularly in oncology, rare diseases, and pediatric indications—the U.S. Food and Drug Administration released its draft guidance titled ``Use of Bayesian Methodology in Clinical Trials of Drugs and Biologics'' on January 12, 2026 (Docket FDA-2025-D-3217). This document establishes a comprehensive framework for employing Bayesian methods as the basis for primary inference, providing detailed recommendations on prior construction, dynamic borrowing mechanisms, subgroup analysis via hierarchical models, dose-finding designs, and rigorous evaluation of frequentist operating characteristics.
 
-Despite the guidance's clear regulatory pathway, there remains a notable gap in the peer-reviewed literature: the absence of fully reproducible, end-to-end methodological implementations that directly apply the five key use cases outlined in the document, utilize only recently released 2025–2026 public healthcare datasets, and incorporate modern synthetic data generation techniques with built-in prior-data conflict detection. The present work addresses this gap by developing and evaluating a complete Bayesian pipeline that integrates power priors with dynamic discounting, Bayesian hierarchical models for subgroup borrowing, and model-assisted dose-finding designs (BOIN and TITE-CRM). The pipeline is calibrated and validated using synthetic trial data generated via YData Fabric (2026 release) and benchmarked against the February 2026 scTumor Atlas single-cell resource (135,424 high-quality malignant cells from 499 samples across 36 cancer types).
+Despite the guidance’s clear regulatory pathway, a notable gap persists in the peer-reviewed literature: the lack of fully reproducible, end-to-end methodological implementations that directly address the five key use cases described in the document, rely exclusively on recently released 2025–2026 public healthcare datasets, and incorporate modern synthetic data generation with built-in prior-data conflict detection. The present work fills this gap by developing and evaluating a complete Bayesian pipeline that integrates power priors with dynamic discounting, Bayesian hierarchical models for subgroup borrowing, and model-assisted dose-finding designs (BOIN and TITE-CRM). The pipeline is calibrated and validated using synthetic trial data generated via YData Fabric (2026 release) and benchmarked against the February 2026 scTumor Atlas single-cell resource (135,424 high-quality malignant cells from 499 samples across 36 cancer types).
 
 Extensive Monte Carlo simulation (10,000 replicates per scenario) demonstrates that the proposed methods maintain frequentist Type I error control at $\leq 0.025$ while achieving Bayesian power exceeding 80\% under clinically meaningful alternatives. On average, the framework reduces required sample size by 30–45\% compared to conventional frequentist designs, with automatic down-weighting of discordant historical information when prior-data conflict is detected. Full open-source Python and Stan code, together with sensitivity analysis templates, is provided to facilitate immediate adoption by trial sponsors and regulatory statisticians.
 \end{abstract}
@@ -34,11 +34,11 @@ Extensive Monte Carlo simulation (10,000 replicates per scenario) demonstrates t
 \textbf{Keywords:} Bayesian clinical trials, FDA guidance 2026, power priors, Bayesian hierarchical models, synthetic data generation, oncology dose-finding, real-world evidence, prior-data conflict, scTumor Atlas
 
 \section{Introduction}
-Traditional frequentist clinical trials continue to face significant operational and statistical limitations, especially in settings characterized by small patient populations, heterogeneous disease biology, or urgent unmet medical needs (e.g., rare diseases, pediatric oncology, and biomarker-driven subgroups). These challenges often result in prolonged accrual periods, excessive costs, and delayed access to potentially effective therapies. In response, the U.S. Food and Drug Administration (FDA) published its long-awaited draft guidance ``Use of Bayesian Methodology in Clinical Trials of Drugs and Biologics'' on January 12, 2026 (Docket FDA-2025-D-3217), fulfilling a key PDUFA VII commitment to clarify and expand the acceptable use of Bayesian approaches for primary inference.
+Traditional frequentist clinical trials continue to face substantial operational and statistical challenges, particularly in settings with small patient populations, heterogeneous disease biology, or urgent unmet medical needs (e.g., rare diseases, pediatric oncology, and biomarker-driven subgroups). These difficulties often lead to prolonged accrual periods, elevated costs, and delayed access to potentially effective therapies. To address these issues, the U.S. Food and Drug Administration (FDA) published its long-awaited draft guidance ``Use of Bayesian Methodology in Clinical Trials of Drugs and Biologics'' on January 12, 2026 (Docket FDA-2025-D-3217), fulfilling a key PDUFA VII commitment to clarify and expand the acceptable use of Bayesian approaches for primary inference.
 
-The guidance explicitly supports Bayesian methods across multiple trial phases and design elements, including: (i) primary analysis of efficacy and safety endpoints, (ii) dynamic borrowing from external controls or historical trials, (iii) shrinkage estimation in subgroup analyses, (iv) model-assisted dose-finding in early-phase oncology studies, and (v) pediatric extrapolation leveraging adult data. It places strong emphasis on pre-specification of priors, quantitative assessment of effective sample size (ESS), comprehensive simulation-based evaluation of operating characteristics (Type I error, power, bias, mean squared error), and mechanisms to detect and mitigate prior-data conflict.
+The guidance explicitly endorses Bayesian methods across various trial phases and design elements, including (i) primary analysis of efficacy and safety endpoints, (ii) dynamic borrowing from external controls or historical trials, (iii) shrinkage estimation in subgroup analyses, (iv) model-assisted dose-finding in early-phase oncology studies, and (v) pediatric extrapolation leveraging adult data. It places strong emphasis on pre-specification of priors, quantitative assessment of effective sample size (ESS), comprehensive simulation-based evaluation of operating characteristics (Type I error, power, bias, mean squared error), and mechanisms to detect and mitigate prior-data conflict.
 
-Although the document provides a robust regulatory framework, there is currently a scarcity of peer-reviewed methodological papers that offer complete, reproducible implementations aligned with the 2026 guidance and leveraging only the most recent public data resources (2025–2026 releases). The present study bridges this gap by proposing and thoroughly evaluating an integrated Bayesian pipeline that combines power priors with dynamic discounting, Bayesian hierarchical models for partial pooling across subgroups, and extended BOIN/TITE-CRM designs for dose optimization. Synthetic trial data generation (YData Fabric 2026) and validation against the February 2026 scTumor Atlas enable realistic operating characteristic assessment. The resulting framework consistently achieves 30–45\% sample-size reduction while strictly adhering to FDA calibration requirements.
+Although the document provides a robust regulatory framework, few peer-reviewed methodological papers currently offer complete, reproducible implementations aligned with the 2026 guidance and utilizing only the most recent public data resources (2025–2026 releases). The present study bridges this gap by proposing and rigorously evaluating an integrated Bayesian pipeline that combines power priors with dynamic discounting, Bayesian hierarchical models for partial pooling across subgroups, and extended BOIN/TITE-CRM designs for dose optimization. Synthetic trial data generation (YData Fabric 2026) and validation against the February 2026 scTumor Atlas enable realistic operating characteristic assessment. The resulting framework consistently achieves a 30–45\% reduction in sample size while strictly adhering to FDA calibration requirements.
 
 \section{Methods}
 
@@ -47,13 +47,13 @@ All analyses follow the standard Bayesian updating paradigm:
 \[
 \pi(\theta \mid \mathbf{y}) \propto \pi(\theta) \cdot L(\mathbf{y} \mid \theta),
 \]
-where $\theta$ represents the parameter(s) of interest (e.g., response probability, hazard ratio, dose-toxicity curve), $\mathbf{y}$ denotes the observed trial data, $\pi(\theta)$ is the prior distribution, and $L(\mathbf{y} \mid \theta)$ is the likelihood function. Posterior inference is performed using Hamiltonian Monte Carlo sampling via CmdStanPy, with convergence monitored through Gelman–Rubin $\hat{R} < 1.01$ and effective sample size $>10{,}000$ per parameter.
+where $\theta$ denotes the parameter(s) of interest (e.g., response probability, hazard ratio, or dose-toxicity curve), $\mathbf{y}$ represents the observed trial data, $\pi(\theta)$ is the prior distribution, and $L(\mathbf{y} \mid \theta)$ is the likelihood function. Posterior inference is conducted using Hamiltonian Monte Carlo sampling via CmdStanPy, with convergence assessed through Gelman–Rubin $\hat{R} < 1.01$ and effective sample size $>10{,}000$ per parameter.
 
 Trial success is declared when the posterior probability exceeds a pre-specified threshold:
 \[
 \Pr(\theta > \delta \mid \mathbf{y}) > c,
 \]
-where $\delta$ is the clinically meaningful effect size and $c$ is calibrated to control frequentist Type I error at $\leq 0.025$ (Guidance Section IV.A). All operating characteristics are evaluated via extensive Monte Carlo simulation to ensure regulatory compliance.
+where $\delta$ is the clinically meaningful effect size and $c$ is calibrated to control frequentist Type I error at $\leq 0.025$ (Guidance Section IV.A). All operating characteristics are evaluated through extensive Monte Carlo simulation to ensure regulatory compliance.
 
 \subsection{Power Prior Derivation and Dynamic Borrowing from Historical Data}
 When external or historical data $\mathbf{y}_0$ (e.g., from previous trials or real-world evidence) are available, we employ the power prior to allow controlled borrowing:
@@ -66,13 +66,13 @@ The final posterior incorporating current trial data $\mathbf{y}$ is:
 \[
 \pi(\theta \mid \mathbf{y}, \mathbf{y}_0, \alpha) \propto L(\theta \mid \mathbf{y}) \cdot L(\theta \mid \mathbf{y}_0)^\alpha \cdot \pi_0(\theta).
 \]
-To enable adaptive borrowing, we treat $\alpha$ as a hyperparameter with a Beta$(a_0, b_0)$ prior (commonly Beta(1,1) for vague discounting) and update it jointly with $\theta$ during MCMC sampling. Prior-data conflict is automatically detected and mitigated when the posterior mode of $\alpha$ falls below a pre-defined threshold (e.g., 0.1), effectively reverting to a non-informative analysis.
+To enable adaptive borrowing, we treat $\alpha$ as a hyperparameter with a $\mathrm{Beta}(a_0, b_0)$ prior (commonly $\mathrm{Beta}(1,1)$ for vague discounting) and update it jointly with $\theta$ during MCMC sampling. Prior-data conflict is automatically detected and mitigated when the posterior mode of $\alpha$ falls below a pre-defined threshold (e.g., 0.1), effectively reverting to a non-informative analysis.
 
 \subsection{Dose-Finding Designs}
 For early-phase oncology trials, we implement two model-assisted Bayesian designs explicitly recommended in the guidance (Section III.F):
 
-- **Bayesian Optimal Interval (BOIN)**: extended with hierarchical borrowing across similar indications to improve precision in small cohorts.
-- **Time-to-Event Continual Reassessment Method (TITE-CRM)**: using a one-parameter power model for late-onset toxicities:
+- \textbf{Bayesian Optimal Interval (BOIN)}: extended with hierarchical borrowing across similar indications to improve precision in small cohorts.
+- \textbf{Time-to-Event Continual Reassessment Method (TITE-CRM)}: using a one-parameter power model for late-onset toxicities:
   \[
   \psi(d_j, \beta) = p_j^{\exp(\beta)}, \quad \beta \sim N(0, \sigma_\beta^2).
   \]
@@ -87,24 +87,42 @@ This hierarchical structure induces shrinkage toward the global mean $\mu$, borr
 
 \subsection{Data Sources and Synthetic Trial Generation}
 Synthetic clinical trial datasets (10,000 replicates per scenario) are generated using YData Fabric (2026 release), calibrated to match marginal and joint distributions observed in:
-- TCGA Pan-Cancer Atlas (2025 update)
-- Vivli anonymized Phase II/III trial repository (2026 release)
-- HCUP National Inpatient Sample oncology subset (2025 claims data)
+\begin{itemize}
+  \item TCGA Pan-Cancer Atlas (2025 update),
+  \item Vivli anonymized Phase II/III trial repository (2026 release),
+  \item HCUP National Inpatient Sample oncology subset (2025 claims data).
+\end{itemize}
 
 Validation is performed against the February 2026 scTumor Atlas, which contains 135,424 high-quality malignant cells from 499 samples spanning 36 cancer types. Patient-level profiles are projected into a batch-corrected latent space using Mahalanobis distance-based selection to inform subgroup-specific priors.
 
 \subsection{Simulation Protocol and Operating Characteristics}
 All designs are evaluated following the exact recommendations in Guidance Section IV.B:
-- Type I error rate under global null hypothesis ($\alpha \leq 0.025$)
-- Power under clinically relevant alternatives
-- Bias, mean squared error (MSE), and average sample size
-- Probability of early stopping for futility or efficacy
-- Rate of prior-data conflict detection
+\begin{itemize}
+  \item Type I error rate under the global null hypothesis ($\alpha \leq 0.025$),
+  \item Power under clinically relevant alternatives,
+  \item Bias, mean squared error (MSE), and average sample size,
+  \item Probability of early stopping for futility or efficacy,
+  \item Rate of prior-data conflict detection.
+\end{itemize}
 
 Simulations are stratified by prior strength (weak: ESS=0; moderate: ESS=20–30; strong: ESS=50+), presence/absence of external controls, and varying degrees of prior-data concordance. Results are reported with 95\% Monte Carlo confidence intervals.
 
 \section{Results}
 Operating characteristics from 10,000 replicates are summarized in Table~\ref{tab:oc} and Figures~\ref{fig:power}--\ref{fig:ess}. All designs maintain Type I error $\leq 0.025$ while achieving power $>80\%$ under realistic alternatives. Average sample size is reduced by 30–45\% relative to frequentist benchmarks, with prior-data conflict detected in $<4\%$ of replicates.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.82\textwidth]{fig_power_curve.pdf}
+\caption{Bayesian power curve as a function of true effect size ($\theta$). Power exceeds 80\% for clinically relevant alternatives ($\theta > 0.4$), calibrated under the dynamic power prior.}
+\label{fig:power}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.82\textwidth]{fig_typeI_heatmap.pdf}
+\caption{Sensitivity heatmap showing Type I error control across prior effective sample sizes (ESS = 0 to 50) and discounting parameter $\alpha$. All values remain $\leq 0.025$.}
+\label{fig:typeI}
+\end{figure}
 
 \begin{table}[ht]
 \caption{Operating Characteristics of the Proposed Bayesian Pipeline}
@@ -122,20 +140,6 @@ BOIN (target 0.25) & BHM-BOIN & 2.40 & 82.9 & 39 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.82\textwidth]{fig_power_curve.pdf}
-\caption{Bayesian power curve as a function of true effect size ($\theta$). Power exceeds 80\% for clinically relevant alternatives ($\theta > 0.4$), calibrated under the dynamic power prior.}
-\label{fig:power}
-\end{figure}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.82\textwidth]{fig_typeI_heatmap.pdf}
-\caption{Sensitivity heatmap showing Type I error control across prior effective sample sizes (ESS = 0 to 50) and discounting parameter $\alpha$. All values remain $\leq 0.025$.}
-\label{fig:typeI}
-\end{figure}
 
 \begin{figure}[ht]
 \centering
@@ -174,7 +178,7 @@ All simulation code, Stan models, synthetic data generation scripts, and sensiti
 \appendix
 \section{Power Prior Derivation (Supplementary)}
 
-\textbf{Motivation.} In clinical-trial settings with external/historical controls (FDA Guidance Section IV.B), we wish to borrow information from historical data $\mathbf{y}_0$ while retaining full control over the degree of borrowing. The power prior achieves this by treating the historical likelihood as a fractional contribution. The scalar $\alpha \in [0,1]$ directly modulates the effective sample size contributed by $\mathbf{y}_0$ (ESS $\approx \alpha \times n_0$).
+\textbf{Motivation.} In clinical-trial settings with external or historical controls (FDA Guidance Section IV.B), we aim to borrow information from historical data $\mathbf{y}_0$ while retaining full control over the degree of borrowing. The power prior achieves this by treating the historical likelihood as a fractional contribution. The scalar $\alpha \in [0,1]$ directly modulates the effective sample size contributed by $\mathbf{y}_0$ (ESS $\approx \alpha \times n_0$).
 
 \textbf{Step-by-step derivation:}
 \begin{enumerate}
@@ -186,8 +190,9 @@ All simulation code, Stan models, synthetic data generation scripts, and sensiti
 \item Final posterior for current data: $\pi(\theta \mid \mathbf{y}, \mathbf{y}_0, \alpha) \propto L(\theta \mid \mathbf{y}) \cdot L(\theta \mid \mathbf{y}_0)^\alpha \cdot \pi_0(\theta)$.
 \end{enumerate}
 
-\textbf{Dynamic $\alpha$ extension.} Place a $\text{Beta}(a_0,b_0)$ hyperprior on $\alpha$ or estimate it by maximising the marginal likelihood. Prior-data conflict is flagged when posterior $\alpha < 0.1$.
+\textbf{Dynamic $\alpha$ extension.} Place a $\text{Beta}(a_0,b_0)$ hyperprior on $\alpha$ or estimate it by maximising the marginal likelihood. Prior-data conflict is flagged when the posterior mode of $\alpha$ falls below 0.1.
 
 \textbf{Conjugate illustration (binomial case).} With $\pi_0(\theta)=\text{Beta}(1,1)$, the power prior simplifies to $\text{Beta}(1+\alpha y_0, 1+\alpha(n_0-y_0))$. The posterior after current data $(y,n)$ is $\text{Beta}(1+y+\alpha y_0, 1+(n-y)+\alpha(n_0-y_0))$.
 
 \end{document}
+
